@@ -1,0 +1,1 @@
+from .config_private import ELJUR_LOGIN, ELJUR_PASSWORD, CENTRAL_API_KEY, CENTRAL_API_URL
