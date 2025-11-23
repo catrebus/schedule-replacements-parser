@@ -16,7 +16,7 @@ DATABASE_URL = f"mysql+aiomysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{D
 
 # API
 API_HOST = 'your_host'
-API_PORT = 8000
+API_PORT = 8001
 API_KEY = 'your_api_key'
 
 
