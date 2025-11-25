@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import re
+from pathlib import Path
 
 from typing import List
 
@@ -9,7 +10,7 @@ from pypdf import PdfReader
 from parser.pydantic_models import Replacement
 
 
-def extract_text_sync(fileName: str) -> List[Replacement]:
+def extract_text_sync(fileName: str | Path) -> List[Replacement]:
     reader = PdfReader(fileName)
     changesLines = []
     for page in reader.pages:
@@ -195,5 +196,7 @@ def extract_text_sync(fileName: str) -> List[Replacement]:
 
 async def extract_text_async(fileName: str = 'last_changes.pdf') -> List[Replacement]:
     """Асинхронный парсинг пдф"""
-    return await asyncio.to_thread(extract_text_sync, f'downloads/{fileName}')
+    ROOT = Path(__file__).resolve().parents[1]
+    DOWNLOAD_DIR = ROOT / "downloads"
+    return await asyncio.to_thread(extract_text_sync, DOWNLOAD_DIR / fileName)
 
