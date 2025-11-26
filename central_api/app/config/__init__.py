@@ -1,1 +1,1 @@
-from .config_private import API_PORT, API_HOST, API_KEY, DATABASE_URL, BOT_URL, BOT_API_KEY
+from .config import API_PORT, API_HOST, API_KEY, DATABASE_URL, BOT_URL, BOT_API_KEY

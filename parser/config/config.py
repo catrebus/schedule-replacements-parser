@@ -1,0 +1,9 @@
+import os
+
+# API
+CENTRAL_API_KEY = os.getenv('CENTRAL_API_KEY')
+CENTRAL_API_URL = os.getenv('PARSER_CENTRAL_API_URL')
+
+# ELJUR DATA
+ELJUR_LOGIN = os.getenv('ELJUR_LOGIN')
+ELJUR_PASSWORD = os.getenv('ELJUR_PASSWORD')

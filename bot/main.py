@@ -9,12 +9,13 @@ from fastapi import FastAPI
 from bot.config import BOT_TOKEN, API_HOST, API_PORT
 from bot.handlers import botRouter
 from bot.middlewares import LoggingMiddleware
-from bot.routers import centralApiRouter
+from bot.routers import centralApiRouter, healthRouter
 
 # FastAPI
 app = FastAPI(title="Bot API")
 
-app.include_router(centralApiRouter)
+app.include_router(centralApiRouter, tags=["Central API"])
+app.include_router(healthRouter, tags=["Health"])
 
 app.add_middleware(LoggingMiddleware)
 

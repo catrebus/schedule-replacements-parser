@@ -1,0 +1,110 @@
+services:
+  central-api:
+    image: central-api
+    build:
+      context: ./central_api/app
+    depends_on:
+      central-api-db:
+        condition: service_healthy
+      replacements-bot:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      CENTRAL_API_HOST: ${CENTRAL_API_HOST}
+      CENTRAL_API_PORT: ${CENTRAL_API_PORT}
+      CENTRAL_API_KEY: ${CENTRAL_API_KEY}
+      BOT_API_KEY: ${BOT_API_KEY}
+      CENTRAL_API_BOT_URL: ${CENTRAL_API_BOT_URL}
+      CENTRAL_DB_USER: ${CENTRAL_DB_USER}
+      CENTRAL_DB_PASSWORD: ${CENTRAL_DB_PASSWORD}
+      CENTRAL_DB_HOST: ${CENTRAL_DB_HOST}
+      CENTRAL_DB_PORT: ${CENTRAL_DB_PORT}
+      CENTRAL_DB_NAME: ${CENTRAL_DB_NAME}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  central-api-db:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CENTRAL_DB_PASSWORD}
+      MYSQL_DATABASE: ${CENTRAL_DB_NAME}
+    volumes:
+      - central-db:/var/lib/mysql
+      - ./mysql/init/central_db:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "3308:3306"
+
+  replacements-bot:
+    image: replacements-bot
+    build:
+      context: ./bot
+    depends_on:
+      replacements-bot-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      BOT_TOKEN: ${REPLACEMENTS_BOT_TOKEN}
+      BOT_DB_USER: ${BOT_DB_USER}
+      BOT_DB_PASSWORD: ${BOT_DB_PASSWORD}
+      BOT_DB_HOST: ${BOT_DB_HOST}
+      BOT_DB_PORT: ${BOT_DB_PORT}
+      BOT_DB_NAME: ${BOT_DB_NAME}
+      BOT_API_HOST: ${BOT_API_HOST}
+      BOT_API_PORT: ${BOT_API_PORT}
+      BOT_API_KEY: ${BOT_API_KEY}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  replacements-bot-db:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BOT_DB_PASSWORD}
+      MYSQL_DATABASE: ${BOT_DB_NAME}
+    volumes:
+      - bot-db:/var/lib/mysql
+      - ./mysql/init/bot_db:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "3309:3306"
+
+  replacements-parser:
+    image: replacements-parser
+    build:
+      context: ./parser
+    depends_on:
+      central-api:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      CENTRAL_API_KEY: ${CENTRAL_API_KEY}
+      PARSER_CENTRAL_API_URL: ${PARSER_CENTRAL_API_URL}
+      ELJUR_LOGIN: ${ELJUR_LOGIN}
+      ELJUR_PASSWORD: ${ELJUR_PASSWORD}
+
+volumes:
+  central-db:
+  bot-db:

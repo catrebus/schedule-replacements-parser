@@ -1,0 +1,6 @@
+/db_dump
+.venv
+.idea
+__pycache__
+*.pyc
+.git

@@ -16,7 +16,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         # Проверка токена
         token = request.headers.get("API-KEY")
-        if token != API_KEY:
+        if token != API_KEY and request.url.path != "/health":
             return Response("Unauthorized", status_code=401)
 
         # Передаем управление дальше
